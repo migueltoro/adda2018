@@ -76,11 +76,14 @@ public class HashTable<K, V> {
 		EntryData<K,V> r = null;
 		int g = group(key);
 		int next = groups.get(g);
-		while(next >= 0) {
+		boolean found=false;
+		while(next >= 0 && !found) {
 			r = data.get(next);
-			if(r.key.equals(key)) break;
+			found= r.key.equals(key);;
 			next = r.next;
 		}
+		if(!found)
+			r=null;
 		return r;
 	}
 	
@@ -95,18 +98,30 @@ public class HashTable<K, V> {
 	public V put(K key, V value){
 		rehash();
 		EntryData<K,V> r = findEntry(key);
-		int g = group(key);
+		
 		if(r==null) {
+			//Si no estaba esa clave ya, se usa un entry vacio para ella (firstFreeData). 
 			r = data.get(this.firstFreeData);
-			groups.set(g, this.firstFreeData);
+			
+			//Este entry será el primero del grupo
+			int g = group(key);
+			int oldfisrtInGrup= groups.get(g);
+			groups.set(g, this.firstFreeData);			
+			
+			//Se apunta al siguiente entry vació ya que el actual será usado
 			this.firstFreeData = r.next;
+			
+			//El nuevo entry sera el primero del grupo, seguido por el que habia antes.
+			r.next=oldfisrtInGrup;
 			r.key = key;
-			r.next = groups.get(g);
+
 			this.size = this.size +1;
 		}
 		r.value = value;		
 		return value;
 	}
+	
+
 	
 	
 	private void freeEntryData(int group, int beforeIndex, int indexData) {
