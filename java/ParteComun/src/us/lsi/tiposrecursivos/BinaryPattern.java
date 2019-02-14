@@ -28,7 +28,7 @@ public class BinaryPattern<E> {
 	
 	public static <E> BinaryPattern<E> variable(String name) {
 		Preconditions.checkNotNull(name);
-		return new BinaryPattern<E>(PatternType.Variable, null, null, null, Variable.var(name));
+		return new BinaryPattern<E>(PatternType.Variable, null, null, null, VariableExp.variable(name));
 	}
 	
 	public static <E> BinaryPattern<E> parse(String s, Function<String,E> f) {
@@ -46,7 +46,7 @@ public class BinaryPattern<E> {
 	}
 	
 	private Label<E> label;
-	private Variable<BinaryTree<E>> varTree;
+	private VariableExp<BinaryTree<E>> varTree;
 	private final BinaryPattern<E> left;
 	private final BinaryPattern<E> right;
 	private PatternType type;
@@ -54,7 +54,7 @@ public class BinaryPattern<E> {
 	private Map<String,BinaryTree<E>> varTrees = null;
 	
 	
-	private BinaryPattern(PatternType type, Label<E> label, BinaryPattern<E> left, BinaryPattern<E> right, Variable<BinaryTree<E>> varTree) {
+	private BinaryPattern(PatternType type, Label<E> label, BinaryPattern<E> left, BinaryPattern<E> right, VariableExp<BinaryTree<E>> varTree) {
 		super();
 		this.type = type;
 		this.label = label;
@@ -94,7 +94,7 @@ public class BinaryPattern<E> {
 		return right;
 	}	
 	
-	public Variable<BinaryTree<E>> asVariable() {
+	public VariableExp<BinaryTree<E>> asVariable() {
 		Preconditions.checkArgument(this.isVariable(), "No permitido");
 		return varTree;
 	}
@@ -140,7 +140,7 @@ public class BinaryPattern<E> {
 		Map<String,BinaryTree<E>> r = Maps2.newHashMap();
 		switch(pattern.getType()) {
 		case Variable: 
-			Variable<BinaryTree<E>> varTree = pattern.asVariable();
+			VariableExp<BinaryTree<E>> varTree = pattern.asVariable();
 			r = Maps2.newHashMap(varTree.getName(),varTree.getValue()); 
 			break;
 		case Binary: 
@@ -232,7 +232,7 @@ public class BinaryPattern<E> {
 			} else if(Character.isLowerCase(label.charAt(1))) {
 				r = BinaryPattern.binary(Label.varLabel(label), toPattern(tree.getLeft(),f), toPattern(tree.getRight(),f));
 			} else {
-				Preconditions.checkState(false, "No puede haber una etiqueta de árbol en este lugar");
+				Preconditions.checkState(false, "No puede haber una etiqueta de ï¿½rbol en este lugar");
 			}
 			break;
 		}
@@ -246,7 +246,7 @@ public class BinaryPattern<E> {
 		case Leaf: 
 			String label = tree.getLabel();
 			if (label.charAt(0) != '_') {
-				Preconditions.checkArgument(false, "No es un patrón sin constantes");
+				Preconditions.checkArgument(false, "No es un patrï¿½n sin constantes");
 			} else if  (Character.isLowerCase(label.charAt(1))){
 				r = BinaryPattern.leaf(Label.varLabel(label)); 
 			} else {
@@ -256,11 +256,11 @@ public class BinaryPattern<E> {
 		case Binary:
 			label = tree.getLabel();
 			if (label.charAt(0) != '_') {
-				Preconditions.checkArgument(false, "No es un patrón sin constantes");
+				Preconditions.checkArgument(false, "No es un patrï¿½n sin constantes");
 			} else if(Character.isLowerCase(label.charAt(1))) {
 				r = BinaryPattern.binary(Label.varLabel(label), toPattern(tree.getLeft()), toPattern(tree.getRight()));
 			} else {
-				Preconditions.checkState(false, "No puede haber una etiqueta de árbol en este lugar");
+				Preconditions.checkState(false, "No puede haber una etiqueta de ï¿½rbol en este lugar");
 			}
 			break;
 		}
@@ -378,12 +378,12 @@ public class BinaryPattern<E> {
 		public enum LabelType{Constant,Variable};
 		
 		private LabelType type;
-		private Constant<E> constant;
-		private Variable<E> variable;
+		private ConstantExp<E> constant;
+		private VariableExp<E> variable;
 		
 		public Label(E value) {
 			super();
-			this.constant = Constant.constant(value);
+			this.constant = ConstantExp.constant(value);
 			this.variable = null;
 			this.type = LabelType.Constant;
 		}
@@ -391,7 +391,7 @@ public class BinaryPattern<E> {
 		public Label(String name) {
 			super();
 			this.constant = null;
-			this.variable = Variable.var(name);
+			this.variable = VariableExp.variable(name);
 			this.type = LabelType.Variable;
 		}
 
@@ -407,11 +407,11 @@ public class BinaryPattern<E> {
 			return type == LabelType.Variable;
 		}
 		
-		public Constant<E> asConstant(){
+		public ConstantExp<E> asConstant(){
 			return constant;
 		}
 		
-		public Variable<E> asVariable(){
+		public VariableExp<E> asVariable(){
 			return variable;
 		}
 		
