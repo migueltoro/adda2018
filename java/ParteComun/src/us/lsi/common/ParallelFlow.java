@@ -26,7 +26,7 @@ public interface ParallelFlow<E> {
 	
 	default <B,R> R acummulate(InmutableCollector<E,B,R> c) {
 		 B base = acummulate(this,c);
-		return c.finisher.apply(base);
+		return c.finisher().apply(base);
 	}
 	
 	default <B,R> B acummulate(ParallelFlow<E> flow, Collector<E,B,R> c) {		
@@ -51,11 +51,11 @@ public interface ParallelFlow<E> {
 			List<ParallelFlow<E>> flows = flow.split();
 			B base1 = acummulate(flows.get(0),c);
 			B base2 = acummulate(flows.get(1),c);	
-			base = c.combiner.apply(base1, base2);
+			base = c.combiner().apply(base1, base2);
 		} else {
-			base = c.initialValue;
+			base = c.initial();
 			while(flow.hasNext()) {
-				base = c.accumulator.apply(base,flow.next());	
+				base = c.accumulator().apply(base,flow.next());	
 			}
 		}	
 		return base;
