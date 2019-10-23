@@ -33,7 +33,7 @@ public class EstadoAfinidadBT implements
 	
 	private EstadoAfinidadBT() {
 		this.indexCliente=0;
-		this.numClientesPorTrabajador= Lists2.copy(DatosAfinidad.trabajadores.size(), 0);
+		this.numClientesPorTrabajador= Lists2.copy(0, DatosAfinidad.trabajadores.size());
 		this.trabajadorOcupadosEnFranja=new HashMap<>();
 		DatosAfinidad.clientes.stream()
 			.forEach(x->this.trabajadorOcupadosEnFranja.put(x.franjaHoraria,new HashSet<>()));
